@@ -9,8 +9,7 @@ const port = process.env.PORT || 3000;
 // Connect Redis && MongoDB
 const connect = async () => {
     try {
-        // await initializeDB();
-        // await redisClient.connect();
+        await redisClient.connect();
         await initializeDB();
     } catch (error) {
         console.log(error);

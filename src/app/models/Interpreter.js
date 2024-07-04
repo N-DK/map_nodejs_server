@@ -1,8 +1,8 @@
-const { query } = require('../../config/db');
+const { query } = require('../../config/db/postgreSQLTool');
 
 const interpreter = {
     get: (__query__, callback) => {
-        return query('interpreter', __query__, (err, results) => {
+        return query('public.planet_osm_roads', __query__, (err, results) => {
             if (err) return callback(err);
             return callback(null, results);
         });

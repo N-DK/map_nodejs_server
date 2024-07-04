@@ -1,9 +1,9 @@
 const { connectToPostgres } = require('./connectPostgreSQL');
 
-let db;
+let pool;
 
 const initializeDB = async () => {
-    db = await connectToPostgres();
+    pool = await connectToPostgres();
 };
 
 const query = async (tableName, queryObject, callback) => {

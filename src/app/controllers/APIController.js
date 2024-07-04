@@ -1,5 +1,6 @@
 const { cacheData } = require('../../middleware/cache');
-const { parseQuery, cacheKey } = require('../../utils');
+const { parseQuery } = require('../../modules/parseQuery');
+const { cacheKey, formatResults } = require('../../utils');
 const interpreter = require('../models/Interpreter');
 
 class APIController {
@@ -17,8 +18,19 @@ class APIController {
             if (err) {
                 return res.json({ result: 0, error: err });
             } else {
-                cacheData(cacheKey('interpreter', query), results, 3600);
-                return res.json({ result: 1, data: results });
+                cacheData(
+                    cacheKey('interpreter', query),
+                    formatResults(results),
+                    3600,
+                );
+                return res.json({
+                    version: 0.1,
+                    osm3s: {
+                        copyright:
+                            'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
+                    },
+                    elements: formatResults(results),
+                });
             }
         });
     }

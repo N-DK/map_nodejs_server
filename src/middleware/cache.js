@@ -1,5 +1,6 @@
+const { parseQuery } = require('../modules/parseQuery');
 const redisClient = require('../services/redis');
-const { parseQuery, cacheKey } = require('../utils');
+const { cacheKey } = require('../utils');
 
 async function cache(req, res, next) {
     const key = cacheKey('interpreter', parseQuery(req?.query?.data));
@@ -7,8 +8,12 @@ async function cache(req, res, next) {
         const data = await redisClient.get(key);
         if (data !== null) {
             return res.json({
-                result: 1,
-                data: JSON.parse(data),
+                version: 0.1,
+                osm3s: {
+                    copyright:
+                        'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
+                },
+                element: JSON.parse(data),
                 from_data: 'cache',
             });
         } else {
@@ -22,7 +27,7 @@ async function cache(req, res, next) {
 
 function cacheData(cacheKey, data, expirationInSeconds = 3600) {
     console.log('Caching data');
-    redisClient.set(cacheKey, JSON.stringify(data), 'EX', expirationInSeconds);
+    redisClient.setEx(cacheKey, expirationInSeconds, JSON.stringify(data));
 }
 
 module.exports = { cache, cacheData };
