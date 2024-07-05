@@ -5,7 +5,7 @@ const cacheKey = (collectionName, query) =>
 
 const formatResults = (results) => {
     return results.map((result) => ({
-        type: result.type || 'way',
+        type: result.type,
         id: result.osm_id,
         bounds: parseGeometry(result.way).bounds,
         geometry: parseGeometry(result.way).coordinates,

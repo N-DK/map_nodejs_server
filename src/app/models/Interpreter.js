@@ -3,8 +3,8 @@ const { query } = require('../../config/db/postgreSQLTool');
 const interpreter = {
     get: (__query__, callback) => {
         return query(
-            'public.planet_osm_line_highway',
-            __query__,
+            `public.planet_osm_${__query__.elementType}`,
+            __query__.conditions,
             {
                 columns: [
                     'osm_id',

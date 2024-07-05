@@ -26,7 +26,6 @@ async function cache(req, res, next) {
 }
 
 function cacheData(cacheKey, data, expirationInSeconds = 3600) {
-    console.log('Caching data');
     redisClient.setEx(cacheKey, expirationInSeconds, JSON.stringify(data));
 }
 

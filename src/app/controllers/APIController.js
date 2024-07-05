@@ -14,6 +14,7 @@ class APIController {
         const data = req?.query?.data;
         if (!data) return res.json({ result: 0 });
         const query = parseQuery(data);
+
         interpreter.get(query, (err, results) => {
             if (err) {
                 return res.json({ result: 0, error: err });
@@ -29,6 +30,10 @@ class APIController {
                         remark: 'runtime error: Query run out of memory using about 2048 MB of RAM.',
                     });
                 }
+                results = results.map((res) => ({
+                    ...res,
+                    type: query.elementType,
+                }));
                 cacheData(
                     cacheKey('interpreter', query),
                     formatResults(results),

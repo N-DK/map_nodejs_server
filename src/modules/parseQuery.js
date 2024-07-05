@@ -1,14 +1,28 @@
 const parseQuery = (overpassQL) => {
     try {
         const conditionRegex = /(\w+)\["(\w+)"="(\w+)"\]/;
+        const idPatternRegex = /(\w+)\((\d+)\)/;
 
         const conditionMatch = overpassQL.match(conditionRegex);
+        const idPatternMatch = overpassQL.match(idPatternRegex);
+
+        if (idPatternMatch) {
+            const elementType = idPatternMatch[1];
+            const elementId = idPatternMatch[2];
+
+            return {
+                elementType,
+                conditions: {
+                    osm_id: elementId,
+                },
+            };
+        }
+
+        const elementType = conditionMatch[1];
 
         if (!conditionMatch) {
             throw new Error('Invalid Overpass QL query');
         }
-
-        const elementType = conditionMatch[1];
 
         const keyValues = {};
         const keyValueRegex = /\["(\w+)"="(\w+)"\]/g;
@@ -19,13 +33,10 @@ const parseQuery = (overpassQL) => {
             keyValues[key] = value;
         }
 
-        const queryObject = {};
-
-        Object.entries(keyValues).forEach(([key, value]) => {
-            queryObject[`${key}`] = value;
-        });
-
-        return queryObject;
+        return {
+            elementType,
+            conditions: keyValues,
+        };
     } catch (err) {
         return { error: err.message };
     }
