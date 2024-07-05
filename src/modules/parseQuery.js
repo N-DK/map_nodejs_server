@@ -19,9 +19,7 @@ const parseQuery = (overpassQL) => {
             keyValues[key] = value;
         }
 
-        const queryObject = {
-            // type: elementType,
-        };
+        const queryObject = {};
 
         Object.entries(keyValues).forEach(([key, value]) => {
             queryObject[`${key}`] = value;

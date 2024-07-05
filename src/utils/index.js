@@ -20,9 +20,3 @@ const formatResults = (results) => {
 };
 
 module.exports = { cacheKey, formatResults };
-
-// /!\         // only vietnam regions
-// const boundingBoxRegex = /\(([\d.]+),([\d.]+),([\d.]+),([\d.]+)\)/;
-// const boundingBoxMatch = overpassQL.match(boundingBoxRegex);
-// Extract bounding box
-// const boundingBox = boundingBoxMatch.slice(1).map(Number);

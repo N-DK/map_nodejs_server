@@ -18,6 +18,17 @@ class APIController {
             if (err) {
                 return res.json({ result: 0, error: err });
             } else {
+                if (results.length > 50000) {
+                    return res.json({
+                        version: 0.1,
+                        osm3s: {
+                            copyright:
+                                'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
+                        },
+                        elements: [],
+                        remark: 'runtime error: Query run out of memory using about 2048 MB of RAM.',
+                    });
+                }
                 cacheData(
                     cacheKey('interpreter', query),
                     formatResults(results),
