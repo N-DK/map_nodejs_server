@@ -1,4 +1,4 @@
-const { query } = require('../../config/db/postgreSQLTool');
+const { query, insert, update } = require('../../config/db/postgreSQLTool');
 
 const interpreter = {
     get: (__query__, callback) => {
@@ -19,6 +19,27 @@ const interpreter = {
                           ]
                         : undefined,
             },
+            (err, results) => {
+                if (err) return callback(err);
+                return callback(null, results);
+            },
+        );
+    },
+    create: (__query__, callback) => {
+        return insert(
+            `public.planet_osm_${__query__.elementType}`,
+            __query__.data,
+            (err, results) => {
+                if (err) return callback(err);
+                return callback(null, results);
+            },
+        );
+    },
+    update: (__query__, callback) => {
+        return update(
+            `public.planet_osm_${__query__.elementType}`,
+            __query__.conditions,
+            __query__.data,
             (err, results) => {
                 if (err) return callback(err);
                 return callback(null, results);

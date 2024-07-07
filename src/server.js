@@ -6,11 +6,15 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+var bodyParser = require('body-parser');
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+
 // Connect Redis && MongoDB
 const connect = async () => {
     try {
-        await redisClient.connect();
         await initializeDB();
+        await redisClient.connect();
     } catch (error) {
         console.log(error);
     }

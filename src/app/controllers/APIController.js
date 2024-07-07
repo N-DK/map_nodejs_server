@@ -50,6 +50,34 @@ class APIController {
             }
         });
     }
+
+    // [POST] interpreter/create
+    createInterpreter(req, res, next) {
+        const data = req?.body;
+        if (!data) return res.json({ result: 0 });
+
+        interpreter.create(data, (err, results) => {
+            if (err) {
+                return res.json({ result: 0, error: err });
+            } else {
+                return res.json({ result: 1, data: results });
+            }
+        });
+    }
+
+    // [PUT] interpreter/update
+    updateInterpreter(req, res, next) {
+        const data = req?.body;
+        if (!data) return res.json({ result: 0 });
+
+        interpreter.update(data, (err, results) => {
+            if (err) {
+                return res.json({ result: 0, error: err });
+            } else {
+                return res.json({ result: 1, data: results });
+            }
+        });
+    }
 }
 
 module.exports = new APIController();
