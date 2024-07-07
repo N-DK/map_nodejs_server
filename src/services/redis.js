@@ -13,8 +13,6 @@ redisClient.on('connect', () => {
     console.log('Connected to Redis');
 });
 
-redisClient.on('error', (err) => {
-    console.error(`Redis error: ${err}`);
-});
+redisClient.on('error', (err) => {});
 
 module.exports = redisClient;

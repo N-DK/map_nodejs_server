@@ -4,6 +4,9 @@ const { cacheKey } = require('../utils');
 
 async function cache(req, res, next) {
     const key = cacheKey('interpreter', parseQuery(req?.query?.data));
+    if (!redisClient.isReady) {
+        return next();
+    }
     try {
         const data = await redisClient.get(key);
         if (data !== null) {
@@ -20,13 +23,15 @@ async function cache(req, res, next) {
             next();
         }
     } catch (error) {
-        console.error('Redis cache error:', error);
+        console.log('Redis cache error:', error);
         next();
     }
 }
 
 function cacheData(cacheKey, data, expirationInSeconds = 3600) {
-    redisClient.setEx(cacheKey, expirationInSeconds, JSON.stringify(data));
+    if (redisClient.isReady) {
+        redisClient.setEx(cacheKey, expirationInSeconds, JSON.stringify(data));
+    }
 }
 
 module.exports = { cache, cacheData };
