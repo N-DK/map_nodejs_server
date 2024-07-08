@@ -13,6 +13,7 @@ async function cache(req, res, next) {
             return res.json({
                 version: 0.1,
                 osm3s: {
+                    timestamp_osm_base: new Date().toISOString(),
                     copyright:
                         'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
                 },

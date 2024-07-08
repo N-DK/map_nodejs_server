@@ -1,12 +1,18 @@
 const parseQuery = (overpassQL) => {
     try {
-        const conditionRegex = /(\w+)\["(\w+)"="(\w+)"\]/;
+        const conditionRegex = /(\w+)(?:\((\d+)\))?\["(\w+)"="(\w+)"\]/;
         const idPatternRegex = /(\w+)\((\d+)\)/;
 
         const conditionMatch = overpassQL.match(conditionRegex);
         const idPatternMatch = overpassQL.match(idPatternRegex);
 
-        if (idPatternMatch) {
+        if (!idPatternMatch && !conditionMatch) {
+            return {
+                error: `parse error: Unknown output format: ${overpassQL}`,
+            };
+        }
+
+        if (idPatternMatch && !conditionMatch) {
             const elementType = idPatternMatch[1];
             const elementId = idPatternMatch[2];
 
@@ -19,6 +25,7 @@ const parseQuery = (overpassQL) => {
         }
 
         const elementType = conditionMatch[1];
+        const elementId = conditionMatch[2] || null;
 
         if (!conditionMatch) {
             throw new Error('Invalid Overpass QL query');
@@ -35,7 +42,10 @@ const parseQuery = (overpassQL) => {
 
         return {
             elementType,
-            conditions: keyValues,
+            conditions: {
+                ...keyValues,
+                ...(elementId && { osm_id: elementId }),
+            },
         };
     } catch (err) {
         return { error: err.message };

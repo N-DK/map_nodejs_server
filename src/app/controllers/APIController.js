@@ -1,6 +1,11 @@
 const { cacheData } = require('../../middleware/cache');
 const { parseQuery } = require('../../modules/parseQuery');
-const { cacheKey, formatResults } = require('../../utils');
+const {
+    cacheKey,
+    checkQueryValidity,
+    handleError,
+    formatOutput,
+} = require('../../utils');
 const interpreter = require('../models/Interpreter');
 
 class APIController {
@@ -15,6 +20,11 @@ class APIController {
         if (!data) return res.json({ result: 0 });
         const query = parseQuery(data);
 
+        const error = checkQueryValidity(query);
+        if (error) {
+            return handleError(res, error);
+        }
+
         interpreter.get(query, (err, results) => {
             if (err) {
                 return res.json({ result: 0, error: err });
@@ -23,6 +33,7 @@ class APIController {
                     return res.json({
                         version: 0.1,
                         osm3s: {
+                            timestamp_osm_base: new Date().toISOString(),
                             copyright:
                                 'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
                         },
@@ -36,16 +47,17 @@ class APIController {
                 }));
                 cacheData(
                     cacheKey('interpreter', query),
-                    formatResults(results),
+                    formatOutput(results),
                     3600,
                 );
                 return res.json({
                     version: 0.1,
                     osm3s: {
+                        timestamp_osm_base: new Date().toISOString(),
                         copyright:
                             'The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.',
                     },
-                    elements: formatResults(results),
+                    elements: formatOutput(results),
                 });
             }
         });

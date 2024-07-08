@@ -3,7 +3,7 @@ const { parseGeometry } = require('../modules/geometryParser');
 const cacheKey = (collectionName, query) =>
     `${collectionName}:${JSON.stringify(query)}`;
 
-const formatResults = (results) => {
+const formatOutput = (results) => {
     return results.map((result) => {
         switch (result.type) {
             case 'node': {
@@ -51,4 +51,23 @@ const formatResults = (results) => {
     });
 };
 
-module.exports = { cacheKey, formatResults };
+function handleError(res, message) {
+    return res.send(`
+        <div>
+            <h4 style="color: red; display: inline;">Error:</h4>
+            <span>${message}</span>
+        </div>
+    `);
+}
+
+function checkQueryValidity(query) {
+    if (query.error) {
+        return query.error;
+    }
+    if (query.elementType !== 'node' && query.elementType !== 'way') {
+        return `Unknown type "${query.elementType}". Static error: For the attribute "type" of the element "query" the only allowed values are "node", "way"`;
+    }
+    return null;
+}
+
+module.exports = { cacheKey, formatOutput, handleError, checkQueryValidity };
