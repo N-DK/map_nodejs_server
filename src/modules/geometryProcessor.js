@@ -13,7 +13,7 @@ const processPoint = (point) => {
     return { lon: lonLat[0], lat: lonLat[1] };
 };
 
-const processSinglePoint = async (point, pool, osmId) => {
+const processSinglePoint = async (point, pool, queryObject) => {
     const [lon, lat] = [point.lon, point.lat];
     const lonLat = proj4('EPSG:4326', 'EPSG:3857', [lon, lat]);
     const geometry = `POINT(${lonLat[0]} ${lonLat[1]})`;
@@ -36,7 +36,7 @@ const processSinglePoint = async (point, pool, osmId) => {
     const [resWays, resNode] = await Promise.all([
         pool.query(selectWaysQuery, [lon, lat]),
         pool.query('SELECT way FROM public.planet_osm_node WHERE osm_id = $1', [
-            osmId,
+            queryObject['osm_id'],
         ]),
     ]);
 
@@ -59,7 +59,7 @@ const processSinglePoint = async (point, pool, osmId) => {
                     ? [lonLat[0], lonLat[1]]
                     : coord,
             );
-        } else {
+        } else if (Object.keys(queryObject).length === 0) {
             geom.coordinates.push([lonLat[0], lonLat[1]]);
         }
 
@@ -76,12 +76,12 @@ const processSinglePoint = async (point, pool, osmId) => {
     return geometry;
 };
 
-const processGeometry = async (geom, pool, osm_id) => {
+const processGeometry = async (geom, pool, queryObject) => {
     let geometry;
     if (Array.isArray(geom)) {
         geometry = processGeometryArray(geom);
     } else {
-        geometry = await processSinglePoint(geom, pool, osm_id);
+        geometry = await processSinglePoint(geom, pool, queryObject);
     }
     return wkx.Geometry.parse(geometry).toWkt();
 };

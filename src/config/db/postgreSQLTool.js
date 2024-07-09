@@ -42,11 +42,7 @@ const insertOrUpdate = async (tableName, data, queryObject, callback) => {
                   .join(' AND ')}`
             : '';
 
-        data['way'] = await processGeometry(
-            data['way'],
-            pool,
-            queryObject['osm_id'],
-        );
+        data['way'] = await processGeometry(data['way'], pool, queryObject);
 
         const values = Object.values(data);
         const text =
