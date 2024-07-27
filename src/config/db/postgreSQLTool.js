@@ -41,8 +41,9 @@ const insertOrUpdate = async (tableName, data, queryObject, callback) => {
                   .map((key, i) => `${key} = $${keys.length + i + 1}`)
                   .join(' AND ')}`
             : '';
-
-        data['way'] = await processGeometry(data['way'], pool, queryObject);
+        if (data['way']) {
+            data['way'] = await processGeometry(data['way'], pool, queryObject);
+        }
 
         const values = Object.values(data);
         const text =
@@ -51,7 +52,6 @@ const insertOrUpdate = async (tableName, data, queryObject, callback) => {
                 : `INSERT INTO ${tableName} (${keys.join(', ')}) VALUES (${keys
                       .map((_, i) => `$${i + 1}`)
                       .join(', ')}) RETURNING *`;
-
         const res = await pool.query(text, [...values, ...queryValues]);
         callback(null, res.rows);
     } catch (err) {

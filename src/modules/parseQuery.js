@@ -1,6 +1,7 @@
 const parseQuery = (overpassQL) => {
     try {
-        const conditionRegex = /(\w+)(?:\((\d+)\))?\["(\w+)"="(\w+)"\]/;
+        const conditionRegex =
+            /(\w+)(?:\((\d+)\))?\["([\p{L}\w]+)"="([\p{L}\w ]+)"\]/u;
         const idPatternRegex = /(\w+)\((\d+)\)/;
 
         const conditionMatch = overpassQL.match(conditionRegex);
@@ -32,7 +33,7 @@ const parseQuery = (overpassQL) => {
         }
 
         const keyValues = {};
-        const keyValueRegex = /\["(\w+)"="(\w+)"\]/g;
+        const keyValueRegex = /\["([\p{L}\w]+)"="([\p{L}\w ]+)"\]/gu;
         let keyValueMatch;
         while ((keyValueMatch = keyValueRegex.exec(overpassQL)) !== null) {
             const key = keyValueMatch[1];
